@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyVIA</title>
+
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ========================= -->
+<!-- HEADER -->
+<!-- ========================= -->
+<header class="header">
+  <div class="container header-inner">
+        <a href="index.html" class="logo">
+        <img src="images/logo.gif" alt="logo">
+        </a>
+
+    <nav class="nav desktop-nav">
+      <span>News</span>
+      <span>Events</span>
+      <span>My programme</span>
+      <span id="menuBtn">Menu ☰</span>
+    </nav>
+  </div>
+</header>
+
+<!-- ========================= -->
+<!-- OVERLAY -->
+<!-- ========================= -->
+<div id="overlay"></div>
+
+<!-- ========================= -->
+<!-- SIDE MENU -->
+<!-- ========================= -->
+<div id="sideMenu" class="side-menu">
+
+  <!-- HEADER -->
+  <div class="menu-header">
+    <a href="index.html" class="logo">
+      <img src="images/logo.gif" alt="logo" style="height: 2.3rem;">
+    </a>
+    <span id="closeMenu">✖</span>
+  </div>
+
+  <!-- SEARCH -->
+  <input class="menu-search" placeholder="Try searching!">
+
+  <!-- MENU ITEMS -->
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Books and literature</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Library</a>
+      <a href="#">Lists of literature for current semesters</a>
+      <a href="#">Purchase of books and materials</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Building information and services</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Campus map</a>
+      <a href="#">Facilities</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Communities and student life</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Student events</a>
+      <a href="#">Clubs</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Exam and tests</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Exam schedule</a>
+      <a href="#">Exam rules</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>International opportunities</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Exchange programs</a>
+      <a href="#">Study abroad</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Internships</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Find internship</a>
+      <a href="#">Internship guidelines</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>IT</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">IT support</a>
+      <a href="#">Passwords</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Rules and guidelines</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Policies</a>
+      <a href="#">Regulations</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Semester overview</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Calendar</a>
+      <a href="#">Important dates</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Study and career guidance</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Counselling</a>
+      <a href="#">Career help</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Study materials</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Resources</a>
+      <a href="#">Downloads</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Study start</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Introduction</a>
+      <a href="#">First week</a>
+    </div>
+  </div>
+
+  <div class="menu-section" onclick="toggleMenu(this)">
+    <div class="menu-title">
+      <span>Quality and assessment</span>
+      <span>+</span>
+    </div>
+    <div class="submenu">
+      <a href="#">Evaluations</a>
+      <a href="#">Feedback</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- HERO + FILTER -->
+<!-- ========================= -->
+<section class="hero">
+  <div class="container">
+
+    <h1>Your Study portal</h1>
+    <p>
+      Here you can find all the information you need for your studies at VIA.
+      Quick and easy.
+    </p>
+
+    <div class="filters">
+      <select>
+        <option>Software Technology Engineering</option>
+      </select>
+
+      <select>
+        <option>Horsens</option>
+      </select>
+
+      <select>
+        <option>All semesters</option>
+      </select>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- EVENTS -->
+<!-- ========================= -->
+<section class="events">
+  <div class="container">
+
+    <h2>Events</h2>
+
+    <div class="event-row">
+
+      <div class="event-card">
+        <img src="images/event1.jpg" alt="Event">
+        <span class="tag">Friday Bar and Party</span>
+        <p>20/03 at 14:00 - 22:00</p>
+        <h3>Friday Bar</h3>
+        <p>VIA | Gæstekantinen</p>
+      </div>
+
+      <div class="event-card">
+        <img src="images/event1.jpg" alt="Event">
+        <span class="tag">Friday Bar and Party</span>
+        <p>27/03 at 14:00 - 22:00</p>
+        <h3>Friday Bar</h3>
+        <p>VIA | Gæstekantinen</p>
+      </div>
+
+      <div class="event-card">
+        <img src="images/event2.jpg" alt="Event">
+        <span class="tag">Music and Song</span>
+        <p>07/04 at 10:00 - 10:15</p>
+        <h3>Joint assembly</h3>
+        <p>VIA | HUB C</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- SHORTCUTS -->
+<!-- ========================= -->
+<section class="shortcuts">
+  <div class="container">
+
+    <h2>Shortcuts</h2>
+
+    <div class="shortcut-box">
+      <div>Bulletin board</div>
+      <div>Itslearning</div>
+      <div>VIAmail</div>
+      <div>Print</div>
+      <div>Change password</div>
+      <div>Parking permit</div>
+      <div>Group rooms</div>
+      <div>OneDrive</div>
+      <div>See grades</div>
+      <div>Student counselling</div>
+      <div>SU</div>
+      <div>Leave of absence</div>
+      <div>Long term illness</div>
+      <div>Parental leave</div>
+      <div>Withdrawing</div>
+      <div>SPS</div>
+      <div>Library</div>
+      <div>Internship Portal</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- SEARCH -->
+<!-- ========================= -->
+<section class="search">
+  <div class="container">
+    <h2>Looking for something?</h2>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Try searching!">
+      <span>🔍</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- NEWS -->
+<!-- ========================= -->
+<section class="news">
+  <div class="container">
+
+    <div class="news-header">
+      <h2>News</h2>
+      <a href="#">See all messages</a>
+    </div>
+
+    <div class="news-row">
+
+      <div class="news-card">
+        <span>Student Services</span>
+        <span>March 13</span>
+        <h3>Examination plan</h3>
+        <p>The examination plan for winter 2025-2026 is now available...</p>
+      </div>
+
+      <div class="news-card">
+        <span>VIA</span>
+        <span>February 27</span>
+        <h3>Join VIA Summer School!</h3>
+        <p>You can join a summer school course...</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- MORE FROM VIA -->
+<!-- ========================= -->
+<section class="more">
+  <div class="container">
+
+    <h2>More from VIA</h2>
+
+    <div class="more-grid">
+
+      <div class="more-card">
+        <img src="images/more1.png" alt="">
+        <h3>Summer school? What is it?</h3>
+        <p>Summer school is a great opportunity...</p>
+      </div>
+
+      <div class="more-card">
+        <img src="images/more2.png" alt="">
+        <h3>Winner of VIA’s Ildsjælepris 2025</h3>
+        <p>Victor has won VIA’s award...</p>
+      </div>
+
+      <div class="more-card">
+        <img src="images/more3.png" alt="">
+        <h3>How can I use VIA library?</h3>
+        <p>VIA Library has many functions...</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ========================= -->
+<!-- FOOTER -->
+<!-- ========================= -->
+<footer class="footer">
+  <div class="container footer-links">
+    <span>Cookie policy</span>
+    <span>Privacy policy</span>
+    <span>Web accessibility</span>
+    <span>Contact VIA Service</span>
+  </div>
+</footer>
+
+<!-- ========================= -->
+<!-- MOBILE NAV -->
+<!-- ========================= -->
+<nav class="mobile-nav">
+  <div>MyVIA</div>
+  <div>News</div>
+  <div>Events</div>
+  <div>Programme</div>
+  <div id="menuBtnMobile">Menu ☰</div>
+</nav>
+
+<script src="script.js"></script>
+
+</body>
+</html>
