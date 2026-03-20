@@ -9,6 +9,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      
+  via-rooms-mapper:
+    build: ./src/VIARooms.Mapper
+    ports:
+      - "5173:5173"
 
 volumes:
   pgdata:
