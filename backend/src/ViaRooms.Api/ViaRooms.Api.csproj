@@ -20,4 +20,9 @@
     <ProjectReference Include="../ViaRooms.Shared/ViaRooms.Shared.csproj" />
   </ItemGroup>
 
+
+  <Target Name="UnblockOutputFiles" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT'">
+    <Exec Command="powershell -Command &quot;Get-ChildItem '$(OutDir)' -Recurse -Include '*.dll','*.exe' | Unblock-File&quot;" ContinueOnError="true" />
+  </Target>
+
 </Project>

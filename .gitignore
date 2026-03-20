@@ -42,3 +42,7 @@ obj/
 *.db-shm
 *.db-wal
 *.sqlite
+
+# private files (prompts, API keys, etc.)
+*.env
+/prompts/
