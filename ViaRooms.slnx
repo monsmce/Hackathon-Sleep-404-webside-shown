@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/ViaRooms.Api/ViaRooms.Api.csproj" />
+    <Project Path="src/ViaRooms.Shared/ViaRooms.Shared.csproj" />
+    <Project Path="src/ViaRooms.Web/ViaRooms.Web.csproj" />
   </Folder>
 </Solution>

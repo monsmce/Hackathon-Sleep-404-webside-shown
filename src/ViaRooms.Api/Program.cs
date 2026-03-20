@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using ViaRooms.Api.Components;
 using ViaRooms.Api.Data;
 using ViaRooms.Api.Data.Seed;
 using ViaRooms.Api.Hubs;
@@ -17,19 +16,30 @@ builder.Services.AddHostedService<SensorSimulatorService>();
 builder.Services.AddSignalR();
 builder.Services.ConfigureHttpJsonOptions(opt =>
     opt.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
+builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(opt => opt.AddDefaultPolicy(p =>
+    p.WithOrigins(builder.Configuration["AllowedOrigins"]!)
+     .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
     await DatabaseSeeder.SeedAsync(scope.ServiceProvider);
 
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    // app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseStaticFiles();
-app.UseAntiforgery();
+app.UseCors();
 
 app.MapHub<RoomHub>("/roomhub");
-
-app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 // REST API endpoints
 app.MapGet("/api/rooms", async (RoomService svc) =>

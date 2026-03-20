@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ViaRooms.Api.Models;
+using ViaRooms.Shared.Models;
 
 namespace ViaRooms.Api.Data.Seed;
 

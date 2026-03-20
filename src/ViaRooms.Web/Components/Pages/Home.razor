@@ -1,10 +1,8 @@
 @page "/"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.SignalR.Client
-@using ViaRooms.Api.Models
-@using ViaRooms.Api.Services
-@inject RoomService RoomService
-@inject NavigationManager Nav
+@inject RoomApiService RoomService
+@inject IConfiguration Config
 @implements IAsyncDisposable
 
 <h2>Room Availability</h2>
@@ -55,7 +53,7 @@ else
         await LoadRoomsAsync();
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Nav.ToAbsoluteUri("/roomhub"))
+            .WithUrl(Config["ApiBaseUrl"] + "/roomhub")
             .WithAutomaticReconnect()
             .Build();
 
@@ -70,7 +68,7 @@ else
 
     private async Task LoadRoomsAsync()
     {
-        _rooms = await RoomService.GetAllRoomsAsync();
+        _rooms = await RoomService.GetAllRoomsAsync() ?? [];
         _lastUpdated = DateTime.UtcNow;
     }
 

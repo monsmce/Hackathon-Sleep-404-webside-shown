@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 // SQLite-backed context — no Npgsql dependency
-using ViaRooms.Api.Models;
+using ViaRooms.Shared.Models;
 
 namespace ViaRooms.Api.Data;
 
@@ -12,7 +12,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Hub>().HasKey(h => h.HubId);
-        modelBuilder.Entity<StudyRoom>().HasKey(r => r.Id);
+        modelBuilder.Entity<StudyRoom>().HasKey(r => r.Id); 
         modelBuilder.Entity<StudyRoom>()
             .HasOne(r => r.Hub)
             .WithMany(h => h.StudyRooms)

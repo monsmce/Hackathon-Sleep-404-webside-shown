@@ -1,4 +1,4 @@
-namespace ViaRooms.Api.Models;
+namespace ViaRooms.Shared.Models;
 
 public class Hub
 {

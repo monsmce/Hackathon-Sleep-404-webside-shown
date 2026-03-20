@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ViaRooms.Api.Data;
 using ViaRooms.Api.Hubs;
-using ViaRooms.Api.Models;
+using ViaRooms.Shared.Models;
 
 namespace ViaRooms.Api.Services;
 
