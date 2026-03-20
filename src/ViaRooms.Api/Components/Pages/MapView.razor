@@ -1,0 +1,80 @@
+@page "/map"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.SignalR.Client
+@using ViaRooms.Api.Models
+@using ViaRooms.Api.Services
+@inject RoomService RoomService
+@inject NavigationManager Nav
+@implements IAsyncDisposable
+
+<h2>Map View</h2>
+<p class="last-updated">Last updated: @_lastUpdated.ToLocalTime().ToString("HH:mm:ss")</p>
+
+<div class="hub-tabs">
+    @foreach (var hub in new[] { "A", "B", "C" })
+    {
+        <button class="tab-btn @(hub == _selectedHub ? "active" : "")" @onclick="() => _selectedHub = hub">
+            Hub @hub
+        </button>
+    }
+</div>
+
+@if (_rooms is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    var hubRooms = _rooms.Where(r => r.HubId == _selectedHub).ToList();
+    @foreach (var floor in hubRooms.GroupBy(r => r.FloorNumber).OrderBy(g => g.Key))
+    {
+        <div class="floor-row">
+            <span class="floor-label">Floor @floor.Key</span>
+            <div class="room-grid">
+                @foreach (var room in floor.OrderBy(r => r.RoomId))
+                {
+                    var cssClass = room.Status == RoomStatus.Available ? "available" : "occupied";
+                    var label = room.RoomId.Split('.').Last();
+                    <div class="room-cell @cssClass" title="@room.RoomId">@label</div>
+                }
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private List<StudyRoom>? _rooms;
+    private DateTime _lastUpdated = DateTime.UtcNow;
+    private string _selectedHub = "A";
+    private HubConnection? _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoomsAsync();
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/roomhub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        _hubConnection.On("RoomUpdated", async () =>
+        {
+            await LoadRoomsAsync();
+            await InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+    private async Task LoadRoomsAsync()
+    {
+        _rooms = await RoomService.GetAllRoomsAsync();
+        _lastUpdated = DateTime.UtcNow;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+            await _hubConnection.DisposeAsync();
+    }
+}
