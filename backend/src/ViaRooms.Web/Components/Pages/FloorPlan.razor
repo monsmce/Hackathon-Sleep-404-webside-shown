@@ -1,0 +1,102 @@
+@page "/floor-plan"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Text.Json
+@using Microsoft.AspNetCore.Hosting
+@inject RoomApiService RoomService
+@inject IConfiguration Config
+@inject IWebHostEnvironment Env
+@implements IAsyncDisposable
+
+<h2>Floor Plan</h2>
+<p class="last-updated">Last updated: @_lastUpdated.ToLocalTime().ToString("HH:mm:ss")</p>
+
+@if (_floorData is null || _rooms is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @foreach (var floor in _floorData)
+    {
+        <h3>@floor.Name</h3>
+        <div class="floor-plan-container" style="position: relative; display: inline-block;">
+            <img src="@floor.Src" alt="@floor.Name" style="max-width: 100%; height: auto;" />
+            
+            @foreach (var room in floor.Rooms)
+            {
+                var liveRoom = _rooms.FirstOrDefault(r => string.Equals(r.RoomId, room.Name, StringComparison.OrdinalIgnoreCase));
+                var statusCss = liveRoom?.Status.ToString().ToLower() ?? "unknown";
+                var dotColor = statusCss == "available" ? "lightgreen" : statusCss == "occupied" ? "red" : "gray";
+
+                <div class="room-dot" 
+                     style="position: absolute; left: @(room.X)px; top: @(room.Y)px; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 4px;">
+                     <div style="width: 16px; height: 16px; border-radius: 50%; background-color: @dotColor; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);" title="@room.Name - @statusCss"></div>
+                     <span style="background: rgba(255,255,255,0.8); padding: 2px 4px; border-radius: 4px; font-weight: bold; font-size: 12px;">@room.Name</span>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<StudyRoom>? _rooms;
+    private List<FloorPlanData>? _floorData;
+    private DateTime _lastUpdated = DateTime.UtcNow;
+    private HubConnection? _hubConnection;
+
+    public class RoomData
+    {
+        public long Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Type { get; set; } = "";
+        public string Status { get; set; } = "";
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+
+    public class FloorPlanData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
+        public string Src { get; set; } = "";
+        public List<RoomData> Rooms { get; set; } = new();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var jsonPath = System.IO.Path.Combine(Env.WebRootPath, "floor_plan_data.json");
+        if (System.IO.File.Exists(jsonPath))
+        {
+            var json = await System.IO.File.ReadAllTextAsync(jsonPath);
+            _floorData = JsonSerializer.Deserialize<List<FloorPlanData>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        await LoadRoomsAsync();
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Config["ApiBaseUrl"] + "/roomhub")
+            .WithAutomaticReconnect()
+            .Build();
+
+        _hubConnection.On("RoomUpdated", async () =>
+        {
+            await LoadRoomsAsync();
+            await InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+    private async Task LoadRoomsAsync()
+    {
+        _rooms = await RoomService.GetAllRoomsAsync() ?? [];
+        _lastUpdated = DateTime.UtcNow;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+            await _hubConnection.DisposeAsync();
+    }
+}
