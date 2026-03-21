@@ -8,56 +8,92 @@
 @inject IWebHostEnvironment Env
 @implements IAsyncDisposable
 
-<h2>Floor Plan</h2>
-<p class="last-updated">Last updated: @_lastUpdated.ToLocalTime().ToString("HH:mm:ss")</p>
+<section class="page-intro page-intro--inline">
+    <div class="container">
+        <div class="page-intro-inner">
+            <div>
+                <p class="eyebrow">Maps</p>
+                <h1>Floor plan</h1>
+                <p>See live room markers on each floor. Dots update automatically as status changes.</p>
+            </div>
+            <div class="intro-meta">
+                <p class="last-updated">Last updated: @_lastUpdated.ToLocalTime().ToString("HH:mm:ss")</p>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-dot" style="background: var(--success);"></span>
+                <span>Available</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot" style="background: var(--danger);"></span>
+                <span>Occupied</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot" style="background: #8d8a85;"></span>
+                <span>Classroom</span>
+            </div>
+        </div>
+    </div>
+</section>
 
 @if (_floorData is null || _rooms is null)
 {
-    <p>Loading...</p>
+    <div class="container">
+        <p class="section-empty">Loading floor plans...</p>
+    </div>
 }
 else
 {
-    @foreach (var floor in _floorData)
-{
-    <h3>@floor.Name</h3>
-    @* Added line-height: 0 to ensure the container is exactly the image height *@
-    <div class="floor-plan-container" style="position: relative; display: inline-block; line-height: 0;">
-        
-        <img src="@floor.Src" alt="@floor.Name" style="max-width: 100%; height: auto; display: block;" />
-        
-        @foreach (var room in floor.Rooms)
+    <div class="container">
+        @foreach (var floor in _floorData)
         {
-            var liveRoom = _rooms?.FirstOrDefault(r => string.Equals(r.RoomId, room.Name, StringComparison.OrdinalIgnoreCase));
-            var statusCss = liveRoom?.Status.ToString().ToLower() ?? "unknown";
-            
-            // Logic for colors based on your API status
-            var dotColor = statusCss == "available" ? "lightgreen" : statusCss == "occupied" ? "#ff4d4d" : "gray";
+            var available = CountStatus(floor.Rooms, RoomStatus.Available);
+            var occupied = CountStatus(floor.Rooms, RoomStatus.Occupied);
+            var total = floor.Rooms.Count;
 
-            @* CHANGE: We now use % instead of px *@
-            <div class="room-dot" 
-                 style="position: absolute; 
-                        left: @(room.X)%; 
-                        top: @(room.Y)%; 
-                        transform: translate(-50%, -50%); 
-                        display: flex; 
-                        align-items: center; 
-                        gap: 6px; 
-                        pointer-events: none;
-                        line-height: normal; ">
-                
-                @* The Dot *@
-                <div style="width: 14px; height: 14px; border-radius: 50%; background-color: @dotColor; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.5);" 
-                     title="@room.Name - @statusCss">
+            <section class="floor-plan-section">
+                <div class="floor-plan-header">
+                    <div>
+                        <span class="pill">Floor</span>
+                        <h3>@floor.Name</h3>
+                        <p class="floor-plan-sub">@total rooms mapped</p>
+                    </div>
+                    <div class="floor-plan-stats">
+                        <span class="status-pill available">Available @available</span>
+                        <span class="status-pill occupied">Occupied @occupied</span>
+                        <span class="status-pill neutral">Classroom @(total - available - occupied)</span>
+                    </div>
                 </div>
-                
-                @* The Label *@
-                <span style="background: rgba(255,255,255,0.85); padding: 1px 4px; border-radius: 4px; font-weight: bold; font-size: 11px; color: black; white-space: nowrap;">
-                    @room.Name
-                </span>
-            </div>
+
+                <div class="floor-plan-card">
+                    <div class="floor-plan-container">
+                        <img src="@floor.Src" alt="@floor.Name" class="floor-plan-image" />
+
+                        @foreach (var room in floor.Rooms)
+                        {
+                            var liveRoom = _rooms?.FirstOrDefault(r => string.Equals(r.RoomId, room.Name, StringComparison.OrdinalIgnoreCase));
+                            var statusCss = liveRoom?.Status.ToString().ToLower() ?? "classroom";
+
+                            var dotColor = statusCss == "available"
+                                ? "lightgreen"
+                                : statusCss == "occupied"
+                                    ? "#ff4d4d"
+                                    : "gray";
+
+                            <div class="room-dot"
+                                 style="left: @(room.X)%; top: @(room.Y)%;"
+                                 title="@room.Name - @statusCss">
+                                <div class="room-dot__marker" style="background-color: @dotColor;"></div>
+                                <div class="room-dot__label">@room.Name</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
         }
     </div>
-}
 }
 
 @code {
@@ -114,6 +150,13 @@ else
         _rooms = await RoomService.GetAllRoomsAsync() ?? [];
         _lastUpdated = DateTime.UtcNow;
     }
+
+    private int CountStatus(IEnumerable<RoomData> rooms, RoomStatus status) =>
+        rooms.Count(room =>
+        {
+            var liveRoom = _rooms?.FirstOrDefault(r => string.Equals(r.RoomId, room.Name, StringComparison.OrdinalIgnoreCase));
+            return liveRoom?.Status == status;
+        });
 
     public async ValueTask DisposeAsync()
     {

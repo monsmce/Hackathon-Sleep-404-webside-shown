@@ -8,8 +8,9 @@
 
         <nav class="nav desktop-nav" aria-label="Primary">
             <a href="/#news" class="nav-link" @onclick="CloseMenu">News</a>
-            <a href="/#availability-check" class="nav-link" @onclick="CloseMenu">Availability check</a>
-            <a href="/availability" class="nav-link" @onclick="CloseMenu">My programme</a>
+            <a href="/map" class="nav-link" @onclick="CloseMenu">Map view</a>
+            <a href="/floor-plan" class="nav-link" @onclick="CloseMenu">Floor plan</a>
+            <a href="/availability" class="nav-link" @onclick="CloseMenu">Availability overview</a>
             <button id="menuBtn" type="button" class="nav-link menu-trigger" @onclick="ToggleMenu" aria-expanded="@_isMenuOpen">
                 Menu &#9776;
             </button>
@@ -69,39 +70,44 @@
 <nav class="mobile-nav" aria-label="Mobile">
     <NavLink href="/" Match="NavLinkMatch.All" class="mobile-nav-item" ActiveClass="active" @onclick="CloseMenu">MyVIA</NavLink>
     <a href="/#news" class="mobile-nav-item" @onclick="CloseMenu">News</a>
-    <a href="/#availability-check" class="mobile-nav-item" @onclick="CloseMenu">Availability</a>
-    <a href="/availability" class="mobile-nav-item" @onclick="CloseMenu">Programme</a>
+    <a href="/map" class="mobile-nav-item" @onclick="CloseMenu">Map</a>
+    <a href="/floor-plan" class="mobile-nav-item" @onclick="CloseMenu">Floor plan</a>
+    <a href="/availability" class="mobile-nav-item" @onclick="CloseMenu">Overview</a>
     <button id="menuBtnMobile" type="button" class="mobile-nav-item" @onclick="ToggleMenu">Menu &#9776;</button>
 </nav>
 
 <script>
     (() => {
-        const sideMenu = document.getElementById("sideMenu");
         const overlay = document.getElementById("overlay");
+        const sideMenu = document.getElementById("sideMenu");
         const menuBtn = document.getElementById("menuBtn");
         const menuBtnMobile = document.getElementById("menuBtnMobile");
         const closeMenu = document.getElementById("closeMenu");
 
-        const open = () => {
-            if (sideMenu) sideMenu.classList.add("active");
-            if (overlay) overlay.classList.add("active");
-        };
-        const close = () => {
-            if (sideMenu) sideMenu.classList.remove("active");
-            if (overlay) overlay.classList.remove("active");
+        const openMenu = () => {
+            sideMenu?.classList.add("active");
+            overlay?.classList.add("active");
         };
 
-        menuBtn?.addEventListener("click", open);
-        menuBtnMobile?.addEventListener("click", open);
-        closeMenu?.addEventListener("click", close);
-        overlay?.addEventListener("click", close);
+        const hideMenu = () => {
+            sideMenu?.classList.remove("active");
+            overlay?.classList.remove("active");
+        };
 
-        // accordion behavior like trial
+        menuBtn?.addEventListener("click", openMenu);
+        menuBtnMobile?.addEventListener("click", openMenu);
+        closeMenu?.addEventListener("click", hideMenu);
+        overlay?.addEventListener("click", hideMenu);
+
         document.querySelectorAll(".menu-section").forEach(section => {
-            section.addEventListener("click", () => {
-                const active = section.classList.contains("active");
+            section.addEventListener("click", (e) => {
+                const target = e.target;
+                // Don't collapse when clicking a link inside the submenu
+                if (target && target.closest && target.closest("a")) return;
+
+                const isActive = section.classList.contains("active");
                 document.querySelectorAll(".menu-section").forEach(s => s.classList.remove("active"));
-                if (!active) section.classList.add("active");
+                if (!isActive) section.classList.add("active");
             });
         });
     })();

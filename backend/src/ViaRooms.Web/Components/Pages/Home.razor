@@ -8,36 +8,60 @@
 <PageTitle>MyVIA</PageTitle>
 
 <section class="hero">
-    <div class="container">
-        <h1>Your Study portal</h1>
-        <p>
-            Here you can find all the room availability information you need for your studies at VIA.
-            Quick and easy.
-        </p>
+    <div class="container hero-grid">
+        <div class="hero-copy">
+            <h1>Your Study portal</h1>
+            <p>
+                Here you can find all the room availability information you need for your studies at VIA.
+                Quick and easy.
+            </p>
 
-        <div class="filters">
-            <select @bind="_selectedHub">
-                <option value="All">All hubs</option>
-                @foreach (var hub in HubOptions)
+            <div class="filters">
+                <select @bind="_selectedHub">
+                    <option value="All">All hubs</option>
+                    @foreach (var hub in HubOptions)
+                    {
+                        <option value="@hub">Hub @hub</option>
+                    }
+                </select>
+
+                <select @bind="_selectedFloor">
+                    <option value="All">All floors</option>
+                    @foreach (var floor in FloorOptions)
+                    {
+                        <option value="@floor">Floor @floor</option>
+                    }
+                </select>
+
+                <select @bind="_selectedStatus">
+                    <option value="All">All statuses</option>
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                </select>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span>Total rooms (filtered)</span>
+                    <strong>@TotalFiltered</strong>
+                </div>
+                @if (AvailableFiltered > 0 || _selectedStatus is "All" or "Available")
                 {
-                    <option value="@hub">Hub @hub</option>
+                    <div class="stat-card">
+                        <span>Available</span>
+                        <strong>@AvailableFiltered</strong>
+                    </div>
                 }
-            </select>
-
-            <select @bind="_selectedFloor">
-                <option value="All">All floors</option>
-                @foreach (var floor in FloorOptions)
+                @if (OccupiedFiltered > 0 || _selectedStatus is "All" or "Occupied")
                 {
-                    <option value="@floor">Floor @floor</option>
+                    <div class="stat-card">
+                        <span>Occupied</span>
+                        <strong>@OccupiedFiltered</strong>
+                    </div>
                 }
-            </select>
-
-            <select @bind="_selectedStatus">
-                <option value="All">All statuses</option>
-                <option value="Available">Available</option>
-                <option value="Occupied">Occupied</option>
-            </select>
+            </div>
         </div>
+        <div class="hero-illustration"></div>
     </div>
 </section>
 
@@ -55,7 +79,7 @@
             </a>
 
             <a class="event-card" href="/map">
-                <img src="/images/event1.jpg" alt="Map view" />
+                <img src="/images/event2.jpg" alt="Map view" />
                 <span class="tag">Availability check</span>
                 <p>@OverviewTimestamp</p>
                 <h3>Map view</h3>
@@ -63,7 +87,7 @@
             </a>
 
             <a class="event-card" href="/floor-plan">
-                <img src="/images/event2.jpg" alt="Floor plan" />
+                <img src="/images/event3.jpg" alt="Floor plan" />
                 <span class="tag">Availability check</span>
                 <p>@OverviewTimestamp</p>
                 <h3>Floor plan</h3>
@@ -214,6 +238,17 @@
             .Take(2)
             .ToList();
 
+    private IReadOnlyList<StudyRoom> HeroRooms =>
+        FilteredRooms
+            .OrderBy(room => room.Status == RoomStatus.Available ? 0 : 1)
+            .ThenBy(room => room.RoomId)
+            .Take(3)
+            .ToList();
+
+    private int TotalFiltered => FilteredRooms.Count;
+    private int AvailableFiltered => FilteredRooms.Count(room => room.Status == RoomStatus.Available);
+    private int OccupiedFiltered => FilteredRooms.Count(room => room.Status == RoomStatus.Occupied);
+
     private string OverviewTimestamp =>
         _rooms is null
             ? "--"
@@ -266,8 +301,8 @@
     private IReadOnlyList<MoreCard> MoreCards =>
     [
         new("Availability overview", "See every tracked room grouped by hub and floor.", "/availability", "/images/more1.png"),
-        new("Map view", "Scan open and occupied rooms in a compact visual layout.", "/map", "/images/more2.png"),
-        new("Floor plan", "Inspect room markers directly on the building plans.", "/floor-plan", "/images/more3.png")
+        new("Map view", "Scan open and occupied rooms in a compact visual layout.", "/map", "/images/event2.jpg"),
+        new("Floor plan", "Inspect room markers directly on the building plans.", "/floor-plan", "/images/event3.jpg")
     ];
 
     protected override async Task OnInitializedAsync()
