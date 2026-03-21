@@ -8,9 +8,9 @@
 
         <nav class="nav desktop-nav" aria-label="Primary">
             <a href="/#news" class="nav-link" @onclick="CloseMenu">News</a>
-            <a href="/#events" class="nav-link" @onclick="CloseMenu">Events</a>
+            <a href="/#availability-check" class="nav-link" @onclick="CloseMenu">Availability check</a>
             <a href="/availability" class="nav-link" @onclick="CloseMenu">My programme</a>
-            <button type="button" class="nav-link menu-trigger" @onclick="ToggleMenu" aria-expanded="@_isMenuOpen">
+            <button id="menuBtn" type="button" class="nav-link menu-trigger" @onclick="ToggleMenu" aria-expanded="@_isMenuOpen">
                 Menu &#9776;
             </button>
         </nav>
@@ -24,7 +24,7 @@
         <NavLink href="/" Match="NavLinkMatch.All" class="logo" @onclick="CloseMenu">
             <img src="/images/logo.gif" alt="MyVIA logo" />
         </NavLink>
-        <button type="button" class="menu-close" @onclick="CloseMenu">x</button>
+        <button id="closeMenu" type="button" class="menu-close" @onclick="CloseMenu">x</button>
     </div>
 
     <input class="menu-search"
@@ -42,11 +42,12 @@
             continue;
         }
 
-        <div class="menu-section @(IsSectionOpen(menuSection.Title) ? "active" : string.Empty)">
-            <button type="button" class="menu-title" @onclick="() => ToggleSection(menuSection.Title)">
+        <div class="menu-section @(IsSectionOpen(menuSection.Title) ? "active" : string.Empty)"
+             @onclick="() => ToggleSection(menuSection.Title)">
+            <div class="menu-title">
                 <span>@menuSection.Title</span>
                 <span>@(IsSectionOpen(menuSection.Title) ? "-" : "+")</span>
-            </button>
+            </div>
 
             @if (IsSectionOpen(menuSection.Title))
             {
@@ -68,10 +69,43 @@
 <nav class="mobile-nav" aria-label="Mobile">
     <NavLink href="/" Match="NavLinkMatch.All" class="mobile-nav-item" ActiveClass="active" @onclick="CloseMenu">MyVIA</NavLink>
     <a href="/#news" class="mobile-nav-item" @onclick="CloseMenu">News</a>
-    <a href="/#events" class="mobile-nav-item" @onclick="CloseMenu">Events</a>
+    <a href="/#availability-check" class="mobile-nav-item" @onclick="CloseMenu">Availability</a>
     <a href="/availability" class="mobile-nav-item" @onclick="CloseMenu">Programme</a>
-    <button type="button" class="mobile-nav-item" @onclick="ToggleMenu">Menu &#9776;</button>
+    <button id="menuBtnMobile" type="button" class="mobile-nav-item" @onclick="ToggleMenu">Menu &#9776;</button>
 </nav>
+
+<script>
+    (() => {
+        const sideMenu = document.getElementById("sideMenu");
+        const overlay = document.getElementById("overlay");
+        const menuBtn = document.getElementById("menuBtn");
+        const menuBtnMobile = document.getElementById("menuBtnMobile");
+        const closeMenu = document.getElementById("closeMenu");
+
+        const open = () => {
+            if (sideMenu) sideMenu.classList.add("active");
+            if (overlay) overlay.classList.add("active");
+        };
+        const close = () => {
+            if (sideMenu) sideMenu.classList.remove("active");
+            if (overlay) overlay.classList.remove("active");
+        };
+
+        menuBtn?.addEventListener("click", open);
+        menuBtnMobile?.addEventListener("click", open);
+        closeMenu?.addEventListener("click", close);
+        overlay?.addEventListener("click", close);
+
+        // accordion behavior like trial
+        document.querySelectorAll(".menu-section").forEach(section => {
+            section.addEventListener("click", () => {
+                const active = section.classList.contains("active");
+                document.querySelectorAll(".menu-section").forEach(s => s.classList.remove("active"));
+                if (!active) section.classList.add("active");
+            });
+        });
+    })();
+</script>
 
 @code {
     private bool _isMenuOpen;
@@ -97,7 +131,7 @@
         new(
             "Communities and student life",
             [
-                new("Events", "/#events"),
+                new("Availability check", "/#availability-check"),
                 new("Latest updates", "/#news"),
                 new("More from MyVIA", "/#more")
             ]),
@@ -141,7 +175,7 @@
             "Semester overview",
             [
                 new("Home", "/"),
-                new("Events", "/#events"),
+                new("Availability check", "/#availability-check"),
                 new("Latest updates", "/#news")
             ]),
         new(

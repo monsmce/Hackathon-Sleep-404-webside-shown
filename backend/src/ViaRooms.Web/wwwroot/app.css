@@ -197,6 +197,7 @@ button {
 .menu-section {
     border-bottom: 1px solid #ddd;
     background: #eee;
+    cursor: pointer;
 }
 
 .menu-section.active {
@@ -215,6 +216,7 @@ button {
     text-align: left;
     font-size: 1.1rem;
     font-weight: 400;
+    cursor: pointer;
 }
 
 .submenu {
